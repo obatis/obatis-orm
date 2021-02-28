@@ -4,6 +4,8 @@ import com.obatis.config.response.result.PageInfo;
 import com.obatis.config.response.result.ResultInfo;
 import com.obatis.db.constant.CacheInfoConstant;
 import com.obatis.db.constant.SqlConstant;
+import com.obatis.db.model.CommonField;
+import com.obatis.db.model.CommonModel;
 import com.obatis.exception.HandleException;
 import com.obatis.db.mapper.BaseBeanSessionMapper;
 import com.obatis.db.mapper.BaseResultSessionMapper;

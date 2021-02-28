@@ -1,10 +1,11 @@
 package com.obatis.db.sql;
 
 import com.obatis.convert.date.DateConvert;
-import com.obatis.db.CommonField;
+import com.obatis.db.model.CommonField;
 import com.obatis.db.annotation.NotColumn;
 import com.obatis.db.constant.CacheInfoConstant;
 import com.obatis.db.constant.SqlConstant;
+import com.obatis.db.model.type.CommonBigIntegerModel;
 import com.obatis.exception.HandleException;
 import com.obatis.generator.NumberGenerator;
 import com.obatis.tools.ValidateTool;
@@ -12,6 +13,7 @@ import org.apache.ibatis.jdbc.SQL;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -77,7 +79,16 @@ public abstract class AbstractInsertMethod {
 				boolean addFlag = false;
 				if (ValidateTool.isEmpty(value)) {
 					if (CommonField.FIELD_ID.equals(columnName)) {
-						field.set(obj, NumberGenerator.getNumber());
+						Class<?> fieldType = field.getType();
+						Object fieldValue = null;
+						if(fieldType == BigInteger.class) {
+							fieldValue = NumberGenerator.getNumber();
+						} else if (fieldType == Long.class || fieldType == String.class) {
+							// 其他类型默认放置当前时间戳
+							fieldValue = DateConvert.getTimeMillis();
+						}
+
+						field.set(obj, fieldValue);
 						addFlag = true;
 					} else if (CommonField.FIELD_CREATE_TIME.equals(columnName)) {
 						field.set(obj, DateConvert.getDateTime());

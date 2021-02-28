@@ -1,6 +1,6 @@
 package com.obatis.db.mapper;
 
-import com.obatis.db.CommonModel;
+import com.obatis.db.model.CommonModel;
 import com.obatis.db.sql.SqlProvider;
 import org.apache.ibatis.annotations.*;
 

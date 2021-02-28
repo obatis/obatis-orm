@@ -1,6 +1,6 @@
 package com.obatis.db.sql;
 
-import com.obatis.db.CommonField;
+import com.obatis.db.model.CommonField;
 import com.obatis.db.constant.CacheInfoConstant;
 import com.obatis.db.constant.SqlConstant;
 import com.obatis.db.constant.type.FilterEnum;

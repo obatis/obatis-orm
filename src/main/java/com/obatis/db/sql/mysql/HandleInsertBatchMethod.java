@@ -1,8 +1,8 @@
 package com.obatis.db.sql.mysql;
 
 import com.obatis.convert.date.DateConvert;
-import com.obatis.db.CommonField;
-import com.obatis.db.CommonModel;
+import com.obatis.db.model.CommonField;
+import com.obatis.db.model.CommonModel;
 import com.obatis.db.annotation.NotColumn;
 import com.obatis.db.constant.CacheInfoConstant;
 import com.obatis.db.constant.SqlConstant;
