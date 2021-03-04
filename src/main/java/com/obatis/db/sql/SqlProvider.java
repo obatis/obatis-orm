@@ -4,7 +4,6 @@ import com.obatis.db.constant.SqlConstant;
 import com.obatis.exception.HandleException;
 import org.apache.ibatis.annotations.Param;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class SqlProvider<T> {
 		return SqlHandleProvider.getBatchUpdateSql(providers, tableName);
 	}
 	
-	public String deleteById(@Param("id") BigInteger id, String tableName) throws HandleException {
+	public String deleteById(@Param("id") Object id, String tableName) throws HandleException {
 		return SqlHandleProvider.getDeleteByIdSql(tableName);
 	}
 	

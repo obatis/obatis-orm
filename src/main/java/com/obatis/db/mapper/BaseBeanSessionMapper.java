@@ -4,7 +4,6 @@ import com.obatis.db.model.CommonModel;
 import com.obatis.db.sql.SqlProvider;
 import org.apache.ibatis.annotations.*;
 
-import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +25,7 @@ public interface BaseBeanSessionMapper<T extends CommonModel> extends CommonMapp
 	int updateBatch(@Param("request") Map<String, Object> params, String tableName);
 	
 	@DeleteProvider(type = SqlProvider.class, method = "deleteById")
-	int deleteById(@Param("id") BigInteger id, String tableName);
+	int deleteById(@Param("id") Object id, String tableName);
 	
 	@DeleteProvider(type = SqlProvider.class, method = "delete")
 	int delete(@Param("request") Map<String, Object> param, String tableName);

@@ -166,7 +166,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param id
 	 * @return
 	 */
-	public int deleteById(BigInteger id) throws HandleException {
+	public int deleteById(Object id) throws HandleException {
 		return this.getBaseBeanSessionMapper().deleteById(id, this.getTableName());
 	}
 
@@ -185,7 +185,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param id
 	 * @return
 	 */
-	public T findById(BigInteger id) {
+	public T findById(Object id) {
 		QueryProvider param = new QueryProvider();
 		param.equals(CommonField.FIELD_ID, id);
 		return this.find(param);
@@ -198,7 +198,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param resultCls
 	 * @return
 	 */
-	public <M extends ResultInfo> M findById(BigInteger id, Class<M> resultCls) {
+	public <M extends ResultInfo> M findById(Object id, Class<M> resultCls) {
 		QueryProvider param = new QueryProvider();
 		param.equals(CommonField.FIELD_ID, id);
 		return this.find(param, resultCls);
@@ -211,7 +211,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param id
 	 * @return
 	 */
-	public T findById(QueryProvider provider, BigInteger id) {
+	public T findById(QueryProvider provider, Object id) {
 		provider.equals(CommonField.FIELD_ID, id);
 		return this.find(provider);
 	}
@@ -224,7 +224,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param resultCls
 	 * @return
 	 */
-	public <M extends ResultInfo> M findById(QueryProvider provider, BigInteger id, Class<M> resultCls) {
+	public <M extends ResultInfo> M findById(QueryProvider provider, Object id, Class<M> resultCls) {
 		provider.equals(CommonField.FIELD_ID, id);
 		return this.find(provider, resultCls);
 	}
