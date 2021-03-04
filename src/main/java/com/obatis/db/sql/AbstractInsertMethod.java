@@ -1,11 +1,10 @@
 package com.obatis.db.sql;
 
 import com.obatis.convert.date.DateConvert;
-import com.obatis.db.model.CommonField;
 import com.obatis.db.annotation.NotColumn;
 import com.obatis.db.constant.CacheInfoConstant;
 import com.obatis.db.constant.SqlConstant;
-import com.obatis.db.model.type.CommonBigIntegerModel;
+import com.obatis.db.model.CommonField;
 import com.obatis.exception.HandleException;
 import com.obatis.generator.NumberGenerator;
 import com.obatis.tools.ValidateTool;
