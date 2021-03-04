@@ -1,5 +1,6 @@
 package com.obatis.db.convert;
 
+import com.obatis.db.model.CommonModel;
 import com.obatis.exception.HandleException;
 import com.obatis.db.annotation.Column;
 import com.obatis.db.annotation.NotColumn;
@@ -24,6 +25,11 @@ public class BeanCacheConvert {
 	}
 	
 	public static final void loadEntityCache(Class<?> cls) {
+
+		if(!CommonModel.class.isAssignableFrom(cls)) {
+			throw new HandleException("error: @Table of model must be extends CommonModel");
+		}
+
 		Map<String, String> columnMap = new HashMap<>();
 		Map<String, String> fieldMap = new HashMap<>();
 		

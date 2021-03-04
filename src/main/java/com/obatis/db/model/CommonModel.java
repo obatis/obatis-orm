@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 public class CommonModel<T> implements Serializable {
 
 	private static final long serialVersionUID = -3683453180317600090L;
+
 	/**
 	 * ID 主键，唯一性标识
 	 */
