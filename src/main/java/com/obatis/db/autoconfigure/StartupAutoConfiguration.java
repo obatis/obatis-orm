@@ -2,7 +2,6 @@ package com.obatis.db.autoconfigure;
 
 import com.obatis.exception.HandleException;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.type.AnnotationMetadata;
 
