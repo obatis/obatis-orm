@@ -1,4 +1,4 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.obatis.db.autoconfigure.StartupAutoConfiguration,\
+com.obatis.db.autoconfigure.EnvironmentPrepareAutoConfiguration,\
 com.obatis.db.autoconfigure.BeanHandleAutoConfiguration

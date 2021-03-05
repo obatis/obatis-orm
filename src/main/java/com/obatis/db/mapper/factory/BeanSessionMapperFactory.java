@@ -1,5 +1,6 @@
 package com.obatis.db.mapper.factory;
 
+import com.obatis.db.autoconfigure.BeanHandleAutoConfiguration;
 import com.obatis.db.constant.CacheInfoConstant;
 import com.obatis.db.mapper.BaseBeanSessionMapper;
 import com.obatis.exception.HandleException;
@@ -18,13 +19,33 @@ public class BeanSessionMapperFactory {
 	 * @return
 	 * @throws HandleException
 	 */
-	public static BaseBeanSessionMapper<?> getSessionMapper(String canonicalName) throws HandleException {
+	public static BaseBeanSessionMapper<?> getSessionMapper(SqlSession sqlSession, String canonicalName) throws HandleException {
+
+		if(getSessionMapper(canonicalName) == null) {
+			createSessionMapper(sqlSession, canonicalName);
+		}
+
+		BaseBeanSessionMapper<?> sessionMapper = getSessionMapper(canonicalName);
+		if(sessionMapper == null) {
+			throw new HandleException("error: sessionMapper is null");
+		}
+
+		return sessionMapper;
+	}
+
+	private static BaseBeanSessionMapper<?> getSessionMapper(String canonicalName) throws HandleException {
 
 		if(CacheInfoConstant.BEAN_SESSION_MAPPER.containsKey(canonicalName)) {
 			return CacheInfoConstant.BEAN_SESSION_MAPPER.get(canonicalName);
 		}
 
-		throw new HandleException("error: sessionMapper is null");
+		return null;
+	}
+
+	private static synchronized void createSessionMapper(SqlSession sqlSession, String canonicalName) {
+		if(!CacheInfoConstant.BEAN_SESSION_MAPPER.containsKey(canonicalName)) {
+			BeanHandleAutoConfiguration.crateBeanInfoHandle(sqlSession);
+		}
 	}
 
 	/**

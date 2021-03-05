@@ -4,17 +4,19 @@ import com.obatis.config.response.result.PageInfo;
 import com.obatis.config.response.result.ResultInfo;
 import com.obatis.db.constant.CacheInfoConstant;
 import com.obatis.db.constant.SqlConstant;
-import com.obatis.db.model.CommonField;
-import com.obatis.db.model.CommonModel;
-import com.obatis.exception.HandleException;
 import com.obatis.db.mapper.BaseBeanSessionMapper;
 import com.obatis.db.mapper.BaseResultSessionMapper;
 import com.obatis.db.mapper.factory.BeanSessionMapperFactory;
 import com.obatis.db.mapper.factory.ResultSessionMapperFactory;
+import com.obatis.db.model.CommonField;
+import com.obatis.db.model.CommonModel;
 import com.obatis.db.sql.QueryProvider;
 import com.obatis.db.sql.SqlHandleProvider;
+import com.obatis.exception.HandleException;
 import com.obatis.tools.ValidateTool;
+import org.apache.ibatis.session.SqlSession;
 
+import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.math.BigInteger;
@@ -39,6 +41,8 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	private String canonicalName;
 	private BaseBeanSessionMapper<T> baseBeanSessionMapper;
 
+	@Resource
+	private SqlSession sqlSession;
 
 	/**
 	 * 获取泛型注入类的 sessionMapper
@@ -53,7 +57,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 		if (baseBeanSessionMapper != null) {
 			return baseBeanSessionMapper;
 		}
-		baseBeanSessionMapper = (BaseBeanSessionMapper<T>) BeanSessionMapperFactory.getSessionMapper(canonicalName);
+		baseBeanSessionMapper = (BaseBeanSessionMapper<T>) BeanSessionMapperFactory.getSessionMapper(sqlSession, canonicalName);
 		return baseBeanSessionMapper;
 	}
 
@@ -75,7 +79,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 			return resultMapperMap.get(resultCls.getCanonicalName());
 		}
 
-		BaseResultSessionMapper<M> resultMapper = (BaseResultSessionMapper<M>) ResultSessionMapperFactory.getSessionMapper(resultCls.getCanonicalName());
+		BaseResultSessionMapper<M> resultMapper = (BaseResultSessionMapper<M>) ResultSessionMapperFactory.getSessionMapper(sqlSession, resultCls.getCanonicalName());
 		resultMapperMap.put(resultCls.getCanonicalName(), resultMapper);
 		return resultMapper;
 	}
