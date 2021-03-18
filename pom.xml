@@ -28,7 +28,7 @@
 
     <scm>
         <url>https://github.com/obatis/obatis-db</url>
-        <connection>scm:git:https://github.com/obatis/obatis-db.git</connection>
+        <connection>scm:git:https://github.com/obatis/obatis-orm.git</connection>
     </scm>
 
     <organization>
