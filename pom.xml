@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.obatis</groupId>
-    <artifactId>obatis-db</artifactId>
+    <artifactId>obatis-orm</artifactId>
     <version>1.0-release</version>
     <packaging>jar</packaging>
-    <name>obatis-db</name>
-    <description>obatis-db, apply database project</description>
-    <url>https://github.com/obatis/obatis-db</url>
+    <name>obatis-orm</name>
+    <description>obatis-orm, apply database project</description>
+    <url>https://github.com/obatis/obatis-orm</url>
 
     <!-- 中央仓库 -->
     <distributionManagement>

@@ -12,7 +12,6 @@ import org.apache.ibatis.jdbc.SQL;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +19,11 @@ import java.util.Map;
 
 public abstract class AbstractInsertMethod {
 
-	protected String handleInsertSql(Object object, Class<?> clsName, String tableName) throws HandleException {
+	protected String handleInsertSql(Object object, Class clazz, String tableName) throws HandleException {
 
         SQL sql = new SQL();
         sql.INSERT_INTO(tableName);
-        Map<String, String> res = this.getInsertFields(object, clsName, tableName);
+        Map<String, String> res = this.getInsertFields(object, clazz, tableName);
         if (res == null) {
             throw new HandleException("error：object is null");
         }
@@ -34,12 +33,12 @@ public abstract class AbstractInsertMethod {
         return sql.toString();
     }
 	
-	private Map<String, String> getInsertFields(Object object, Class<?> clsName, String tableName) throws HandleException {
+	private Map<String, String> getInsertFields(Object object, Class clazz, String tableName) throws HandleException {
 		List<String> fields = new ArrayList<>();
 		List<String> values = new ArrayList<>();
 
 		Map<String, String> columnMap = CacheInfoConstant.COLUMN_CACHE.get(tableName);
-		getInsertFieldVaule(clsName, columnMap, object, fields, values);
+		getInsertFieldVaule(clazz, columnMap, object, fields, values);
 
 		if (fields.size() > 0) {
 			Map<String, String> res = new HashMap<>();
@@ -51,10 +50,10 @@ public abstract class AbstractInsertMethod {
 		}
 	}
 	
-	private void getInsertFieldVaule(Class<?> clsName, Map<String, String> columnMap, Object obj, List<String> fields, List<String> values)
+	private void getInsertFieldVaule(Class clazz, Map<String, String> columnMap, Object obj, List<String> fields, List<String> values)
 			throws HandleException {
 
-		Field[] fieldArr = clsName.getDeclaredFields();
+		Field[] fieldArr = clazz.getDeclaredFields();
 		for (Field field : fieldArr) {
 
 			boolean isStatic = Modifier.isStatic(field.getModifiers());
@@ -78,16 +77,16 @@ public abstract class AbstractInsertMethod {
 				boolean addFlag = false;
 				if (ValidateTool.isEmpty(value)) {
 					if (CommonField.FIELD_ID.equals(columnName)) {
-						Class<?> fieldType = field.getType();
-						Object fieldValue = null;
-						if(fieldType == BigInteger.class) {
-							fieldValue = NumberGenerator.getNumber();
-						} else if (fieldType == Long.class || fieldType == String.class) {
-							// 其他类型默认放置当前时间戳
-							fieldValue = DateConvert.getTimeMillis();
-						}
+//						Class<?> fieldType = field.getType();
+//						Object fieldValue = null;
+//						if(fieldType == BigInteger.class) {
+//							fieldValue = NumberGenerator.getNumber();
+//						} else {
+//							// 其他类型默认放置当前时间戳
+//							fieldValue = DateConvert.getTimeMillis();
+//						}
 
-						field.set(obj, fieldValue);
+						field.set(obj, NumberGenerator.getNumber());
 						addFlag = true;
 					} else if (CommonField.FIELD_CREATE_TIME.equals(columnName)) {
 						field.set(obj, DateConvert.getDateTime());
@@ -108,7 +107,7 @@ public abstract class AbstractInsertMethod {
 			}
 		}
 
-		Class<?> supCls = clsName.getSuperclass();
+		Class supCls = clazz.getSuperclass();
 		if (supCls != null) {
 			getInsertFieldVaule(supCls, columnMap, obj, fields, values);
 		}
