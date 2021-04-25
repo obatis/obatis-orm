@@ -1,6 +1,5 @@
 package com.obatis.orm.mapper;
 
-import com.obatis.orm.model.CommonModel;
 import com.obatis.orm.sql.SqlProvider;
 import org.apache.ibatis.annotations.*;
 
@@ -10,7 +9,7 @@ import java.util.Map;
 /**
  * mapper的顶层父类，每一个实体对应的map都需要继承，提供类常规的对数据库的操作
  */
-public interface BaseBeanSessionMapper<T extends CommonModel> extends CommonMapper<T> {
+public interface BaseBeanSessionMapper<T> extends CommonMapper<T> {
 	
 	@InsertProvider(type = SqlProvider.class, method = "insert")
 	int insert(@Param("request") T t, String tableName, Class<T> cls);

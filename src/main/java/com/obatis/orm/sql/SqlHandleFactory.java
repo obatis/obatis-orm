@@ -1,7 +1,8 @@
-package com.obatis.orm;
+package com.obatis.orm.sql;
 
 import com.obatis.config.response.result.PageInfo;
 import com.obatis.config.response.result.ResultInfo;
+import com.obatis.orm.SqlHandle;
 import com.obatis.orm.constant.CacheInfoConstant;
 import com.obatis.orm.constant.SqlConstant;
 import com.obatis.orm.mapper.BaseBeanSessionMapper;
@@ -9,12 +10,15 @@ import com.obatis.orm.mapper.BaseResultSessionMapper;
 import com.obatis.orm.mapper.factory.BeanSessionMapperFactory;
 import com.obatis.orm.mapper.factory.ResultSessionMapperFactory;
 import com.obatis.orm.model.CommonField;
-import com.obatis.orm.model.CommonModel;
-import com.obatis.orm.sql.QueryProvider;
-import com.obatis.orm.sql.SqlHandleProvider;
 import com.obatis.exception.HandleException;
+import com.obatis.orm.model.CommonModel;
+import com.obatis.orm.provider.QueryProvider;
+import com.obatis.orm.provider.DeleteProvider;
+import com.obatis.orm.provider.UpdateProvider;
+import com.obatis.orm.provider.handle.ProviderBuilder;
 import com.obatis.tools.ValidateTool;
 import org.apache.ibatis.session.SqlSession;
+import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
@@ -29,12 +33,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * DBHandleFactory 数据库操作类，提供对数据库操作的入口，并进行简要封装
+ * SqlHandleFactory 数据库操作类，提供对数据库操作的入口，并进行简要封装
  * 2020-10-17日调整为 serviceImpl 实现直接继承实现，无需再新建 dao 层包结构
  * @author HuangLongPu
- * @param <T>
+ * @param
  */
-public abstract class DBHandleFactory<T extends CommonModel> {
+@Configuration
+public class SqlHandleFactory<T> implements SqlHandle<T> {
 
 	private Class<T> entityCls;
 	private String tableName;
@@ -97,7 +102,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @return
 	 * @throws HandleException
 	 */
-	public String getTableName() throws HandleException {
+	private String getTableName() throws HandleException {
 
 		if (entityCls == null) {
 			getEntityCls();
@@ -116,6 +121,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param t    单个添加的实体数据
 	 * @return
 	 */
+	@Override
 	public int insert(T t) throws HandleException {
 		if (!(t instanceof CommonModel)) {
 			throw new HandleException("error: entity is not instanceof CommonModel");
@@ -128,6 +134,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param list
 	 * @return
 	 */
+	@Override
 	public int batchInsert(List<T> list) throws HandleException {
 		return this.getBaseBeanSessionMapper().insertBatch(list, getTableName(), entityCls);
 	}
@@ -137,7 +144,8 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
-	public int update(QueryProvider provider) throws HandleException {
+	@Override
+	public int update(UpdateProvider provider) throws HandleException {
 		
 		if(provider == null) {
 			throw new HandleException("error: update QueryProvider is null");
@@ -154,7 +162,8 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @return
 	 * @throws HandleException
 	 */
-	public int batchUpdate(List<QueryProvider> list) throws HandleException {
+	@Override
+	public int batchUpdate(List<UpdateProvider> list) throws HandleException {
 		
 		if(list == null || list.isEmpty()) {
 			throw new HandleException("error: batchUpdate QueryProvider is empty");
@@ -170,7 +179,11 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param id
 	 * @return
 	 */
+	@Override
 	public int deleteById(Object id) throws HandleException {
+		if(id == null) {
+			throw new HandleException("deleteById >> id is null");
+		}
 		return this.getBaseBeanSessionMapper().deleteById(id, this.getTableName());
 	}
 
@@ -179,7 +192,8 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
-	public int delete(QueryProvider provider) throws HandleException {
+	@Override
+	public int delete(DeleteProvider provider) throws HandleException {
 		return this.getBaseBeanSessionMapper().delete(getProviderParamsMapInfo(provider), this.getTableName());
 	}
 
@@ -189,9 +203,13 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param id
 	 * @return
 	 */
+	@Override
 	public T findById(Object id) {
-		QueryProvider param = new QueryProvider();
-		param.equals(CommonField.FIELD_ID, id);
+		if(id == null) {
+			throw new HandleException("findById >> id is null");
+		}
+		QueryProvider param = ProviderBuilder.query();
+		param.equal(CommonField.FIELD_ID, id);
 		return this.find(param);
 	}
 
@@ -202,9 +220,10 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param resultCls
 	 * @return
 	 */
+	@Override
 	public <M extends ResultInfo> M findById(Object id, Class<M> resultCls) {
-		QueryProvider param = new QueryProvider();
-		param.equals(CommonField.FIELD_ID, id);
+		QueryProvider param = ProviderBuilder.query();
+		param.equal(CommonField.FIELD_ID, id);
 		return this.find(param, resultCls);
 	}
 
@@ -215,8 +234,12 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param id
 	 * @return
 	 */
+	@Override
 	public T findById(QueryProvider provider, Object id) {
-		provider.equals(CommonField.FIELD_ID, id);
+		if(id == null) {
+			throw new HandleException("findById(QueryProvider, Object) >> id is null");
+		}
+		provider.equal(CommonField.FIELD_ID, id);
 		return this.find(provider);
 	}
 
@@ -228,8 +251,12 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param resultCls
 	 * @return
 	 */
+	@Override
 	public <M extends ResultInfo> M findById(QueryProvider provider, Object id, Class<M> resultCls) {
-		provider.equals(CommonField.FIELD_ID, id);
+		if(id == null) {
+			throw new HandleException("findById(QueryProvider, Object, Class<M>) >> id is null");
+		}
+		provider.equal(CommonField.FIELD_ID, id);
 		return this.find(provider, resultCls);
 	}
 
@@ -239,6 +266,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public T find(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().find(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -250,6 +278,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param resultCls
 	 * @return
 	 */
+	@Override
 	public <M extends ResultInfo> M find(QueryProvider provider, Class<M> resultCls) {
 		return this.getBaseResultSessionMapper(resultCls).find(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -259,6 +288,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public T findOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.getBaseBeanSessionMapper().find(getProviderParamsMapInfo(provider), this.getTableName());
@@ -271,6 +301,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param <M>
 	 * @return
 	 */
+	@Override
 	public <M extends ResultInfo> M findOne(QueryProvider provider, Class<M> resultCls) {
 		provider.setLimit(1);
 		return this.getBaseResultSessionMapper(resultCls).find(getProviderParamsMapInfo(provider), this.getTableName());
@@ -282,6 +313,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public boolean validate(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().validate(getProviderParamsMapInfo(provider), this.getTableName()) > 0;
 	}
@@ -291,6 +323,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Map<String, Object> findConvertMap(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findToMap(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -301,6 +334,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<T> list(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().list(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -311,6 +345,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public <M extends ResultInfo> List<M> list(QueryProvider provider, Class<M> resultCls) {
 		return this.getBaseResultSessionMapper(resultCls).list(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -321,6 +356,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<Map<String, Object>> listConvertMap(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().query(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -330,6 +366,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<Integer> listInteger(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().listInteger(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -339,6 +376,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<BigInteger> listBigInteger(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().listBigInteger(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -348,6 +386,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<Long> listLong(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().listLong(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -357,6 +396,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<Double> listDouble(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().listDouble(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -366,6 +406,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<BigDecimal> listBigDecimal(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().listBigDecimal(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -375,6 +416,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<String> listString(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().listString(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -384,6 +426,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<Date> listDate(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().listDate(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -393,6 +436,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<LocalDate> listLocalDate(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().listLocalDate(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -402,6 +446,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public List<LocalDateTime> listLocalDateTime(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().listLocalDateTime(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -412,6 +457,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Integer findInteger(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findInteger(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -423,6 +469,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Integer findIntegerOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findInteger(provider);
@@ -433,6 +480,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public BigInteger findBigInteger(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findBigInteger(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -444,6 +492,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public BigInteger findBigIntegerOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findBigInteger(provider);
@@ -455,6 +504,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Long findLong(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findLong(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -466,6 +516,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Long findLongOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findLong(provider);
@@ -477,6 +528,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Double findDouble(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findDouble(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -488,6 +540,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Double findDoubleOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findDouble(provider);
@@ -499,6 +552,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public BigDecimal findBigDecimal(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findBigDecimal(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -510,6 +564,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public BigDecimal findBigDecimalOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findBigDecimal(provider);
@@ -521,6 +576,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Date findDate(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findDate(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -532,6 +588,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Date findDateOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findDate(provider);
@@ -543,6 +600,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public LocalDate findLocalDate(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findLocalDate(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -554,6 +612,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public LocalDate findLocalDateOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findLocalDate(provider);
@@ -565,6 +624,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public LocalDateTime findLocalDateTime(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findLocalDateTime(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -576,6 +636,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public LocalDateTime findLocalDateTimeOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findLocalDateTime(provider);
@@ -587,6 +648,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public LocalTime findLocalTime(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findLocalTime(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -598,6 +660,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public LocalTime findTimeOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findLocalTime(provider);
@@ -609,6 +672,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public String findString(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findString(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -620,6 +684,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public String findStringOne(QueryProvider provider) {
 		provider.setLimit(1);
 		return this.findString(provider);
@@ -631,6 +696,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
+	@Override
 	public Object findObject(QueryProvider provider) {
 		return this.getBaseBeanSessionMapper().findObject(getProviderParamsMapInfo(provider), this.getTableName());
 	}
@@ -640,7 +706,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider
 	 * @return
 	 */
-	private Map<String, Object> getProviderParamsMapInfo(QueryProvider provider) {
+	private Map<String, Object> getProviderParamsMapInfo(Object provider) {
 		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put(SqlConstant.PROVIDER_OBJ, provider);
 		return paramMap;
@@ -652,6 +718,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param params    需传入的条件值，按顺序存放
 	 * @return
 	 */
+	@Override
 	public T findBySql(String sql, List<Object> params) {
 		return this.getBaseBeanSessionMapper().findBySql(sql, params);
 	}
@@ -662,6 +729,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param params
 	 * @return
 	 */
+	@Override
 	public Object findObjectBySql(String sql, List<Object> params) {
 		return this.getBaseBeanSessionMapper().findObjectBySql(sql, params);
 	}
@@ -672,6 +740,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param params
 	 * @return
 	 */
+	@Override
 	public int findTotal(String sql, List<Object> params) {
 		return this.getBaseBeanSessionMapper().findTotalByParam(sql, params);
 	}
@@ -683,6 +752,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param resultCls    返回类型
 	 * @return
 	 */
+	@Override
 	public <M extends ResultInfo> M findBySql(String sql, List<Object> params, Class<M> resultCls) {
 		return this.getBaseResultSessionMapper(resultCls).findBySql(sql, params);
 	}
@@ -693,6 +763,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param list   需传入的条件值，按顺序存放
 	 * @return
 	 */
+	@Override
 	public Map<String, Object> findMapBySql(String sql, List<Object> list) {
 		return this.getBaseBeanSessionMapper().findMapBySql(sql, list);
 	}
@@ -703,6 +774,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param params  需传入的条件值，按顺序存放
 	 * @return
 	 */
+	@Override
 	public List<T> listBySql(String sql, List<Object> params) {
 		return this.getBaseBeanSessionMapper().listBySql(sql, params);
 	}
@@ -714,6 +786,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param resultCls    返回bean类型
 	 * @return
 	 */
+	@Override
 	public <M extends ResultInfo> List<M> listBySql(String sql, List<Object> params, Class<M> resultCls) {
 		return this.getBaseResultSessionMapper(resultCls).listBySql(sql, params);
 	}
@@ -724,6 +797,7 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param params   需传入的条件值，按顺序存放
 	 * @return
 	 */
+	@Override
 	public List<Map<String, Object>> listMapBySql(String sql, List<Object> params) {
 		return this.getBaseBeanSessionMapper().listMapBySql(sql, params);
 	}
@@ -738,17 +812,11 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param pageSize      每行显示条数
 	 * @return
 	 */
+	@Override
 	public PageInfo<T> page(String sql, String totalSql, List<Object> params, int pageNumber, int pageSize) {
-
-		int total = this.findTotal(totalSql, params);
 		PageInfo<T> page = new PageInfo<>();
-		page.setTotal(total);
-		if (total == 0) {
-			// 当没有数据的时候，直接不进行数据查询
-			return page;
-		}
-		sql = SqlHandleProvider.appendPageSql(sql, pageNumber, pageSize);
-		page.setList(this.getBaseBeanSessionMapper().listBySql(sql, params));
+		String buildSql = this.buildSqlQueryPage(page, sql, totalSql, params, pageNumber, pageSize);
+		page.setList(this.getBaseBeanSessionMapper().listBySql(buildSql, params));
 		return page;
 	}
 
@@ -763,16 +831,11 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param resultCls     resultCls 返回 预定义的 resultCls Bean 泛型数据类型
 	 * @return
 	 */
+	@Override
 	public <M extends ResultInfo> PageInfo<M> page(String sql, String totalSql, List<Object> params, int pageNumber, int pageSize, Class<M> resultCls) {
-		int total = this.findTotal(totalSql, params);
 		PageInfo<M> page = new PageInfo<>();
-		page.setTotal(total);
-		if (total == 0) {
-			// 当没有数据的时候，直接不进行数据查询
-			return page;
-		}
-		sql = SqlHandleProvider.appendPageSql(sql, pageNumber, pageSize);
-		page.setList(this.getBaseResultSessionMapper(resultCls).listBySql(sql, params));
+		String buildSql = this.buildSqlQueryPage(page, sql, totalSql, params, pageNumber, pageSize);
+		page.setList(this.getBaseResultSessionMapper(resultCls).listBySql(buildSql, params));
 		return page;
 	}
 
@@ -786,17 +849,28 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param pageSize      每行显示条数
 	 * @return
 	 */
+	@Override
 	public PageInfo<Map<String, Object>> pageResultMap(String sql, String totalSql, List<Object> params, int pageNumber, int pageSize) {
-		int total = this.findTotal(totalSql, params);
 		PageInfo<Map<String, Object>> page = new PageInfo<>();
+		String buildSql = this.buildSqlQueryPage(page, sql, totalSql, params, pageNumber, pageSize);
+		page.setList(this.getBaseBeanSessionMapper().listMapBySql(buildSql, params));
+		return page;
+	}
+
+	/**
+	 * 构造传入 sql 的分页查询公共方法
+	 * @param page
+	 * @return
+	 */
+	private String buildSqlQueryPage(PageInfo page, String sql, String totalSql, List<Object> params, int pageNumber, int pageSize) {
+		int total = this.findTotal(totalSql, params);
 		page.setTotal(total);
 		if (total == 0) {
 			// 当没有数据的时候，直接不进行数据查询
-			return page;
+			return null;
 		}
 		sql = SqlHandleProvider.appendPageSql(sql, pageNumber, pageSize);
-		page.setList(this.getBaseBeanSessionMapper().listMapBySql(sql, params));
-		return page;
+		return sql;
 	}
 
 	/**
@@ -805,23 +879,14 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param provider 封装的参数对象
 	 * @return
 	 */
+	@Override
 	public PageInfo<T> page(QueryProvider provider) {
-		Map<String, Object> providerMap = new HashMap<>();
-		providerMap.put(SqlConstant.PROVIDER_OBJ, provider);
-		// 拼装SQL语句
-		SqlHandleProvider.getQueryPageSql(providerMap, this.getTableName());
-
-		int total = this.getBaseBeanSessionMapper().findTotal((String) providerMap.get(SqlConstant.PROVIDER_COUNT_SQL), providerMap);
 		PageInfo<T> page = new PageInfo<>();
-		page.setTotal(total);
-		if (total == 0) {
-			// 当总条数为0时，直接取消数据查询
+		Map<String, Object> paramMap = this.buildQueryPage(provider, page);
+		if(paramMap == null) {
 			return page;
 		}
-
-		String querySql = (String) providerMap.get(SqlConstant.PROVIDER_QUERY_SQL);
-		providerMap.put(SqlConstant.PROVIDER_OBJ, provider);
-		page.setList(this.getBaseBeanSessionMapper().page(querySql, providerMap));
+		page.setList(this.getBaseBeanSessionMapper().page((String) paramMap.get(SqlConstant.PROVIDER_QUERY_SQL), paramMap));
 		return page;
 	}
 	
@@ -832,25 +897,38 @@ public abstract class DBHandleFactory<T extends CommonModel> {
 	 * @param resultCls      返回 预定义的 resultCls Bean 泛型数据类型
 	 * @return
 	 */
+	@Override
 	public <M extends ResultInfo> PageInfo<M> page(QueryProvider provider, Class<M> resultCls) {
+		PageInfo<M> page = new PageInfo<>();
+		Map<String, Object> paramMap = this.buildQueryPage(provider, page);
+		if(paramMap == null) {
+			return page;
+		}
+		page.setList(this.getBaseResultSessionMapper(resultCls).page((String) paramMap.get(SqlConstant.PROVIDER_QUERY_SQL), paramMap));
+		return page;
+	}
+
+	/**
+	 * 构造分页查询公共方法
+	 * @param provider
+	 * @param page
+	 * @return
+	 */
+	private Map<String, Object> buildQueryPage(QueryProvider provider, PageInfo page) {
 		Map<String, Object> paramMap = new HashMap<>();
 		paramMap.put(SqlConstant.PROVIDER_OBJ, provider);
 		// 拼装SQL语句
 		SqlHandleProvider.getQueryPageSql(paramMap, this.getTableName());
 
 		int total = this.getBaseBeanSessionMapper().findTotal((String) paramMap.get(SqlConstant.PROVIDER_COUNT_SQL), paramMap);
-		PageInfo<M> page = new PageInfo<>();
 		page.setTotal(total);
-		
+
 		if (total == 0) {
 			// 当总条数为0时，直接取消数据查询
-			return page;
+			return null;
 		}
 
-		String querySql = (String) paramMap.get(SqlConstant.PROVIDER_QUERY_SQL);
 		paramMap.put(SqlConstant.PROVIDER_OBJ, provider);
-		page.setList(this.getBaseResultSessionMapper(resultCls).page(querySql, paramMap));
-		return page;
+		return paramMap;
 	}
-
 }
