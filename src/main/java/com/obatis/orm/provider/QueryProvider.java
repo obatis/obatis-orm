@@ -4,10 +4,13 @@ import com.obatis.exception.HandleException;
 import com.obatis.orm.constant.type.UnionEnum;
 import com.obatis.orm.provider.condition.AbstractQueryConditionProvider;
 
+/**
+ * 查询代理句柄接口
+ */
 public interface QueryProvider extends AbstractQueryConditionProvider {
 
     /**
-     * 用于select查询
+     * 用于select查询，设置查询字段/属性
      * @param columns
      * @throws HandleException
      */
@@ -132,10 +135,10 @@ public interface QueryProvider extends AbstractQueryConditionProvider {
     QueryProvider selectDateFormat(String fieldName, String pattern, String aliasName);
 
     /**
-     * 添加不需要查询的字段，主要针对实体泛型返回的查询中，如果字段被加入，则会在 SQL 中过滤。
+     * 排除不需要查询的字段，主要针对实体泛型返回的查询中，如果字段被加入，则会在 SQL 中过滤。
      * @param fieldName
      */
-    QueryProvider removeField(String...fieldName);
+    QueryProvider removeColumn(String...fieldName);
 
     /**
      * 如果需要 QueryProvider 不查询任何字段，调用此方法传入 true 即可。

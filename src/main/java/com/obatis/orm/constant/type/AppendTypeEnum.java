@@ -1,6 +1,6 @@
 package com.obatis.orm.constant.type;
 
-public enum JoinTypeEnum {
+public enum AppendTypeEnum {
 
     /**
      * 表示连接类型为 and 默认
@@ -13,7 +13,7 @@ public enum JoinTypeEnum {
 
     private String joinTypeName;
 
-    JoinTypeEnum(String joinTypeName) {
+    AppendTypeEnum(String joinTypeName) {
         this.joinTypeName = joinTypeName;
     }
 

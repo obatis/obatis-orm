@@ -7,6 +7,7 @@ import com.obatis.orm.constant.CacheInfoConstant;
 import com.obatis.orm.constant.type.*;
 import com.obatis.orm.convert.BeanCacheConvert;
 import com.obatis.exception.HandleException;
+import com.obatis.orm.provider.condition.handle.AbstractOrder;
 import com.obatis.orm.sql.mysql.HandleOrderMethod;
 import com.obatis.generator.NumberGenerator;
 import com.obatis.tools.ValidateTool;
@@ -702,7 +703,7 @@ public class QueryProvider {
 	 * @param value
 	 */
 	private void andFilter(String filterName, FilterEnum filterType, Object value) {
-		this.addFilter(filterName, filterType, value, JoinTypeEnum.AND);
+		this.addFilter(filterName, filterType, value, AppendTypeEnum.AND);
 	}
 
 	/**
@@ -713,7 +714,7 @@ public class QueryProvider {
 	 * @param pattern
 	 */
 	private void andFilter(String filterName, FilterEnum filterType, Object value, String pattern) {
-		this.addFilter(filterName, filterType, value, JoinTypeEnum.AND, pattern);
+		this.addFilter(filterName, filterType, value, AppendTypeEnum.AND, pattern);
 	}
 
 	/**
@@ -724,7 +725,7 @@ public class QueryProvider {
 	 * @param value
 	 */
 	private void andOnFilter(String filterName, FilterEnum filterType, Object value) {
-		this.addOnFilter(filterName, filterType, value, JoinTypeEnum.AND);
+		this.addOnFilter(filterName, filterType, value, AppendTypeEnum.AND);
 	}
 
 	/**
@@ -735,7 +736,7 @@ public class QueryProvider {
 	 * @param value
 	 */
 	private void andOnFilter(String filterName, FilterEnum filterType, Object value, String pattern) {
-		this.addOnFilter(filterName, filterType, value, JoinTypeEnum.AND, pattern);
+		this.addOnFilter(filterName, filterType, value, AppendTypeEnum.AND, pattern);
 	}
 
 	/**
@@ -745,7 +746,7 @@ public class QueryProvider {
 	 * @param value
 	 * @param joinTypeEnum
 	 */
-	private void addFilter(String filterName, FilterEnum filterType, Object value, JoinTypeEnum joinTypeEnum) {
+	private void addFilter(String filterName, FilterEnum filterType, Object value, AppendTypeEnum joinTypeEnum) {
 		this.addFilter(filterName, filterType, value, joinTypeEnum, null);
 	}
 
@@ -757,7 +758,7 @@ public class QueryProvider {
 	 * @param joinTypeEnum
 	 * @param pattern
 	 */
-	private void addFilter(String filterName, FilterEnum filterType, Object value, JoinTypeEnum joinTypeEnum, String pattern) {
+	private void addFilter(String filterName, FilterEnum filterType, Object value, AppendTypeEnum joinTypeEnum, String pattern) {
 		if (ValidateTool.isEmpty(filterName)) {
 			throw new HandleException("error: filter field is null");
 		} else if (!FilterEnum.IS_NULL.equals(filterType) && !FilterEnum.IS_NOT_NULL.equals(filterType) && null == value) {
@@ -786,7 +787,7 @@ public class QueryProvider {
 	 * @param value
 	 * @param joinTypeEnum
 	 */
-	private void checkFilter(List<Object[]> filterList, String filterName, FilterEnum filterType, Object value, JoinTypeEnum joinTypeEnum) {
+	private void checkFilter(List<Object[]> filterList, String filterName, FilterEnum filterType, Object value, AppendTypeEnum joinTypeEnum) {
 		for (int i = 0, j = filterList.size(); i < j; i++) {
 			Object[] filter = filterList.get(i);
 			if(filter[0].toString().equals(filterName) && filterType.equals(filter[1]) && joinTypeEnum.equals(filter[3])) {
@@ -809,11 +810,11 @@ public class QueryProvider {
 	 * @param value
 	 * @param joinTypeEnum
 	 */
-	private void addOnFilter(String filterName, FilterEnum filterType, Object value, JoinTypeEnum joinTypeEnum) {
+	private void addOnFilter(String filterName, FilterEnum filterType, Object value, AppendTypeEnum joinTypeEnum) {
 		this.addOnFilter(filterName, filterType, value, joinTypeEnum, null);
 	}
 
-	private void addOnFilter(String filterName, FilterEnum filterType, Object value, JoinTypeEnum joinTypeEnum, String pattern) {
+	private void addOnFilter(String filterName, FilterEnum filterType, Object value, AppendTypeEnum joinTypeEnum, String pattern) {
 		if (ValidateTool.isEmpty(filterName)) {
 			throw new HandleException("error: on filter field is null");
 		} else if (!FilterEnum.IS_NULL.equals(filterType) && !FilterEnum.IS_NOT_NULL.equals(filterType) && null == value) {
@@ -841,7 +842,7 @@ public class QueryProvider {
 	 * @param value
 	 */
 	private void or(String filterName, FilterEnum filterType, Object value) {
-		this.addFilter(filterName, filterType, value, JoinTypeEnum.OR);
+		this.addFilter(filterName, filterType, value, AppendTypeEnum.OR);
 	}
 
 	/**
@@ -851,7 +852,7 @@ public class QueryProvider {
 	 * @param value
 	 */
 	private void or(String filterName, FilterEnum filterType, Object value, String pattern) {
-		this.addFilter(filterName, filterType, value, JoinTypeEnum.OR, pattern);
+		this.addFilter(filterName, filterType, value, AppendTypeEnum.OR, pattern);
 	}
 
 	/**
@@ -861,11 +862,11 @@ public class QueryProvider {
 	 * @param value
 	 */
 	private void onOr(String filterName, FilterEnum filterType, Object value) {
-		this.addOnFilter(filterName, filterType, value, JoinTypeEnum.OR);
+		this.addOnFilter(filterName, filterType, value, AppendTypeEnum.OR);
 	}
 
 	private void onOr(String filterName, FilterEnum filterType, Object value, String pattern) {
-		this.addOnFilter(filterName, filterType, value, JoinTypeEnum.OR, pattern);
+		this.addOnFilter(filterName, filterType, value, AppendTypeEnum.OR, pattern);
 	}
 
 	/**
@@ -2111,7 +2112,7 @@ public class QueryProvider {
 	 */
 	@Deprecated
 	public void orProvider(QueryProvider queryProvider) {
-		this.addProvider(queryProvider, JoinTypeEnum.AND);
+		this.addProvider(queryProvider, AppendTypeEnum.AND);
 	}
 
 	/**
@@ -2122,7 +2123,7 @@ public class QueryProvider {
 	 * @param queryProvider
 	 */
 	public void addProvider(QueryProvider queryProvider) {
-		this.addProvider(queryProvider, JoinTypeEnum.AND);
+		this.addProvider(queryProvider, AppendTypeEnum.AND);
 	}
 
 	/**
@@ -2132,7 +2133,7 @@ public class QueryProvider {
 	 * 采用枚举的形式，灵活与主体拼接连接方式
 	 * @param queryProvider
 	 */
-	public void addProvider(QueryProvider queryProvider, JoinTypeEnum joinTypeEnum) {
+	public void addProvider(QueryProvider queryProvider, AppendTypeEnum joinTypeEnum) {
 		if (queryProvider == null) {
 			throw new HandleException("error: queryProvider is null");
 		} else if (queryProvider == this) {
@@ -2157,7 +2158,7 @@ public class QueryProvider {
 	 * @param queryProvider
 	 */
 	public void addOnProvider(QueryProvider queryProvider) {
-		this.addOnProvider(queryProvider, JoinTypeEnum.AND);
+		this.addOnProvider(queryProvider, AppendTypeEnum.AND);
 	}
 
 	/**
@@ -2168,7 +2169,7 @@ public class QueryProvider {
 	 * 采用枚举的形式，灵活与主体拼接连接方式
 	 * @param queryProvider
 	 */
-	public void addOnProvider(QueryProvider queryProvider, JoinTypeEnum joinTypeEnum) {
+	public void addOnProvider(QueryProvider queryProvider, AppendTypeEnum joinTypeEnum) {
 		if (queryProvider == null) {
 			throw new HandleException("error: queryProvider is null");
 		} else if (queryProvider == this) {

@@ -46,7 +46,7 @@ public abstract class AbstractInsertMethod {
 			res.put(SqlConstant.BEAN_VALUE, String.join(",", values));
 			return res;
 		} else {
-			return null;
+			return this;
 		}
 	}
 	

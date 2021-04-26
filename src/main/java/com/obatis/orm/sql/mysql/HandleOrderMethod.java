@@ -2,7 +2,7 @@ package com.obatis.orm.sql.mysql;
 
 import com.obatis.orm.constant.type.OrderEnum;
 import com.obatis.orm.constant.type.SqlHandleEnum;
-import com.obatis.orm.sql.AbstractOrder;
+import com.obatis.orm.provider.condition.handle.AbstractOrder;
 
 import java.util.List;
 

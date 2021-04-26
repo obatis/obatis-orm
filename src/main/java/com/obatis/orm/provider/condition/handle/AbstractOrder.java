@@ -1,4 +1,4 @@
-package com.obatis.orm.sql;
+package com.obatis.orm.provider.condition.handle;
 
 import com.obatis.orm.constant.type.OrderEnum;
 import com.obatis.orm.constant.type.SqlHandleEnum;

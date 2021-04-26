@@ -1,10 +1,52 @@
 package com.obatis.orm.provider.condition;
 
-import com.obatis.orm.constant.type.JoinTypeEnum;
+import com.obatis.orm.constant.type.AppendTypeEnum;
 import com.obatis.orm.constant.type.OrderEnum;
 import com.obatis.orm.provider.QueryProvider;
 
 public interface AbstractConditionProvider extends ConditionProvider {
+
+    /**
+     * 连接查询且为and关系查询条件
+     * @param filterName
+     * @param value
+     */
+    AbstractConditionProvider onEqual(String filterName, Object value);
+
+    /**
+     * 连接查询 or 关系的查询条件，等于查询，=
+     * @param filterName
+     * @param value
+     */
+    AbstractConditionProvider onOrEqual(String filterName, Object value);
+
+    /**
+     * 连接查询且为and关系查询条件，针对时间格式化使用
+     * @param filterName
+     * @param value
+     */
+    AbstractConditionProvider onEqualDateFormat(String filterName, Object value, String pattern);
+
+    /**
+     * 连接查询 or 关系的查询条件，等于查询，=，针对时间格式化查询条件
+     * @param filterName
+     * @param value
+     */
+    AbstractConditionProvider onOrEqualDateFormat(String filterName, Object value, String pattern);
+
+    /**
+     * 连接查询且为and关系的字段值相等的查询条件，例如 a = b，a和b均为数据库字段
+     * @param filterName
+     * @param fieldName
+     */
+    AbstractConditionProvider onEqualField(String filterName, String fieldName);
+
+    /**
+     * 连接查询 or 关系的字段值相等的查询条件，例如 a = b，a和b均为数据库字段
+     * @param filterName
+     * @param fieldName
+     */
+    AbstractConditionProvider onOrEqualField(String filterName, String fieldName);
 
     /**
      * 连接查询 on 连接的 like 模糊查询
@@ -47,48 +89,6 @@ public interface AbstractConditionProvider extends ConditionProvider {
      * @param value
      */
     AbstractConditionProvider onOrRightLike(String filterName, Object value);
-
-    /**
-     * 连接查询且为and关系查询条件
-     * @param filterName
-     * @param value
-     */
-    AbstractConditionProvider onEquals(String filterName, Object value);
-
-    /**
-     * 连接查询且为and关系查询条件，针对时间格式化使用
-     * @param filterName
-     * @param value
-     */
-    AbstractConditionProvider onEqualsDateFormat(String filterName, Object value, String pattern);
-
-    /**
-     * 连接查询且为and关系的字段值相等的查询条件，例如 a = b，a和b均为数据库字段
-     * @param filterName
-     * @param fieldName
-     */
-    AbstractConditionProvider onEqualsField(String filterName, String fieldName);
-
-    /**
-     * 连接查询 or 关系的查询条件，等于查询，=
-     * @param filterName
-     * @param value
-     */
-    AbstractConditionProvider onOrEquals(String filterName, Object value);
-
-    /**
-     * 连接查询 or 关系的查询条件，等于查询，=，针对时间格式化查询条件
-     * @param filterName
-     * @param value
-     */
-    AbstractConditionProvider onOrEqualsDateFormat(String filterName, Object value, String pattern);
-
-    /**
-     * 连接查询 or 关系的字段值相等的查询条件，例如 a = b，a和b均为数据库字段
-     * @param filterName
-     * @param fieldName
-     */
-    AbstractConditionProvider onOrEqualsField(String filterName, String fieldName);
 
     /**
      * 连接查询 and 查询条件，大于查询，>
@@ -181,10 +181,26 @@ public interface AbstractConditionProvider extends ConditionProvider {
     AbstractConditionProvider onGreaterEqualZero(String filterName);
 
     /**
+     * 连接查询 and 大于等于0的日期格式化条件表达式
+     * @param filterName
+     * @param pattern
+     * @return
+     */
+    AbstractConditionProvider onGreaterEqualZeroDateFormat(String filterName, String pattern);
+
+    /**
      * 连接查询 or 大于等于0的条件表达式，传入字段名称即可
      * @param filterName
      */
     AbstractConditionProvider onOrGreaterEqualZero(String filterName);
+
+    /**
+     * 连接查询 or 大于等于0的条件表达式，传入字段名称即可,针对时间格式化查询条件
+     * @param filterName
+     * @param pattern
+     * @return
+     */
+    AbstractConditionProvider onOrGreaterEqualZeroDateFormat(String filterName, String pattern);
 
     /**
      * 连接查询 and 查询条件，小于查询，<
@@ -501,7 +517,7 @@ public interface AbstractConditionProvider extends ConditionProvider {
      * 采用枚举的形式，灵活与主体拼接连接方式
      * @param queryProvider
      */
-    AbstractConditionProvider addOnProvider(QueryProvider queryProvider, JoinTypeEnum joinTypeEnum);
+    AbstractConditionProvider addOnProvider(QueryProvider queryProvider, AppendTypeEnum joinTypeEnum);
 
     /**
      * 添加 left join 查询，会被拼接到left join 的连体SQL。 当使用这个属性时，必须设置 joinTableName的连接表名。

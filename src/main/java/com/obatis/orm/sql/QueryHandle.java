@@ -7,6 +7,7 @@ import com.obatis.orm.constant.type.DateHandleEnum;
 import com.obatis.orm.constant.type.FilterEnum;
 import com.obatis.orm.constant.type.SqlHandleEnum;
 import com.obatis.exception.HandleException;
+import com.obatis.orm.provider.UpdateProvider;
 import com.obatis.tools.ValidateTool;
 
 import java.lang.reflect.Field;
@@ -144,11 +145,11 @@ public class QueryHandle {
 		return true;
 	}
 	
-	public static final void getUpdateField(Object object, QueryProvider queryProvider) {
-		getUpdateField(object, object.getClass(), queryProvider);
+	public static final void getUpdateField(Object object, UpdateProvider updateProvider) {
+		getUpdateField(object, object.getClass(), updateProvider);
 	}
 	
-	private static void getUpdateField(Object object, Class<?> cls, QueryProvider queryProvider) {
+	private static void getUpdateField(Object object, Class<?> cls, UpdateProvider updateProvider) {
 		Field[] fields = cls.getDeclaredFields();
 		
 		for (Field field : fields) {
@@ -160,7 +161,7 @@ public class QueryHandle {
 			/**
 			 * 进行条件的连带处理
 			 */
-			setFilter(object, queryProvider, field);
+//			setFilter(object, updateProvider, field);
 			UpdateField updateField = field.getAnnotation(UpdateField.class);
 			if (updateField == null) {
 				continue;
@@ -186,19 +187,19 @@ public class QueryHandle {
 				/**
 				 * 常规类型操作
 				 */
-				queryProvider.set(fieldName, value);
+				updateProvider.set(fieldName, value);
 				break;
 			case HANDLE_UP:
 				/**
 				 * 累加
 				 */
-				queryProvider.addUp(fieldName, value);
+				updateProvider.up(fieldName, value);
 				break;
 			case HANDLE_REDUCE:
 				/**
 				 * 累加
 				 */
-				queryProvider.addReduce(fieldName, value);
+				updateProvider.reduce(fieldName, value);
 				break;
 			default:
 				throw new HandleException("error: update annotation invalid");
@@ -207,7 +208,7 @@ public class QueryHandle {
 		
 		Class<?> supClas = cls.getSuperclass();
 		if(supClas != null) {
-			getUpdateField(object, supClas, queryProvider);
+			getUpdateField(object, supClas, updateProvider);
 		}
 	}
 
