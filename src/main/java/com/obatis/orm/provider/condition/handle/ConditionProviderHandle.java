@@ -1,22 +1,18 @@
 package com.obatis.orm.provider.condition.handle;
 
+import com.obatis.config.request.RequestParam;
 import com.obatis.exception.HandleException;
 import com.obatis.orm.constant.type.AppendTypeEnum;
 import com.obatis.orm.constant.type.FilterEnum;
 import com.obatis.orm.provider.QueryProvider;
-import com.obatis.orm.provider.condition.AbstractConditionProvider;
 import com.obatis.orm.provider.condition.ConditionProvider;
+import com.obatis.orm.sql.QueryHandle;
 import com.obatis.tools.ValidateTool;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConditionProviderHandle implements ConditionProvider {
-
-    /**
-     * 表名
-     */
-    private String tableName;
 
     /**
      * 条件列表
@@ -26,13 +22,30 @@ public class ConditionProviderHandle implements ConditionProvider {
      * 追加的代理句柄列表
      */
     private List<Object[]> providerArray;
+    /**
+     * 行数
+     */
+    private int limit;
+    private Object updateObj;
 
-    public void setTableName(String tableName) {
-        this.tableName = tableName;
+    public List<Object[]> getProviderArray() {
+        return providerArray;
     }
 
-    public String getTableName() {
-        return tableName;
+    /**
+     * 获取查询条件
+     * @return
+     */
+    public List<Object[]> getFilterArray() {
+        return filterArray;
+    }
+
+    /**
+     * 获取影响的行数
+     * @return
+     */
+    public int getLimit() {
+        return limit;
     }
 
     /**
@@ -582,17 +595,41 @@ public class ConditionProviderHandle implements ConditionProvider {
     }
 
     @Override
-    public QueryProvider setLimit(int rows) {
-        return null;
+    public ConditionProvider setLimit(int rows) {
+        this.limit = rows;
+        return this;
     }
 
     @Override
-    public AbstractConditionProvider setFilters(Object obj) {
-        return null;
+    public ConditionProvider setFilters(Object obj) {
+        if (!(obj instanceof RequestParam)) {
+            throw new HandleException("error: the filter is not instanceof RequestParam");
+        }
+        if(updateObj != null && updateObj == obj) {
+            return this;
+        }
+        QueryHandle.getFilters(obj, this);
+        return this;
     }
 
+    /**
+     * 移除所有属性，方便对象复用，但是要确保对象已经被消费
+     * @return
+     */
     @Override
-    public AbstractConditionProvider reset() {
-        return null;
+    public ConditionProvider reset() {
+        if(filterArray != null && !filterArray.isEmpty()) {
+            filterArray.clear();
+        }
+        if(providerArray != null && !providerArray.isEmpty()) {
+            providerArray.clear();
+        }
+        if(limit != 0) {
+            limit = 0;
+        }
+        if(updateObj != null) {
+            updateObj = null;
+        }
+        return this;
     }
 }

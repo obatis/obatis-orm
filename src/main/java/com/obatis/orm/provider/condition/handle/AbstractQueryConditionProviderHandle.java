@@ -22,6 +22,14 @@ public class AbstractQueryConditionProviderHandle extends AbstractConditionProvi
      */
     private List<Object[]> havingArray;
 
+    public List<Object[]> getGroupArray() {
+        return groupArray;
+    }
+
+    public List<Object[]> getHavingArray() {
+        return havingArray;
+    }
+
     /**
      * 设置分组字段
      * @param column
@@ -104,6 +112,22 @@ public class AbstractQueryConditionProviderHandle extends AbstractConditionProvi
     @Override
     public AbstractQueryConditionProvider addHavingCountGreaterThan(String fieldName, Number value) {
         this.addHaving(fieldName, SqlHandleEnum.HANDLE_COUNT, FilterEnum.GREATER_THAN, value);
+        return this;
+    }
+
+    /**
+     * 移除所有属性，方便对象复用，但是要确保对象已经被消费
+     * @return
+     */
+    @Override
+    public AbstractQueryConditionProvider reset() {
+        super.reset();
+        if(groupArray != null && !groupArray.isEmpty()) {
+            groupArray.clear();
+        }
+        if(havingArray != null && !havingArray.isEmpty()) {
+            havingArray.clear();
+        }
         return this;
     }
 }

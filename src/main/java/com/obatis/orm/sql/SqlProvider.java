@@ -2,6 +2,7 @@ package com.obatis.orm.sql;
 
 import com.obatis.orm.constant.SqlConstant;
 import com.obatis.exception.HandleException;
+import com.obatis.orm.provider.handle.QueryProviderHandle;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -69,10 +70,7 @@ public class SqlProvider<T> {
 	}
 	
 	public String pageSql(String sql, @Param("request") Map<String, Object> providers) {
-		QueryProvider queryProvider = (QueryProvider) providers.get(SqlConstant.PROVIDER_OBJ);
-//		if (PageEnum.IS_PAGE_TRUE.equals(queryProvider.getIsPage())) {
-			return SqlHandleProvider.appendPageSql(sql, queryProvider.getPageNumber(), queryProvider.getPageSize());
-//		}
-//		return sql;
+		QueryProviderHandle queryProvider = (QueryProviderHandle) providers.get(SqlConstant.PROVIDER_OBJ);
+		return SqlHandleProvider.appendPageSql(sql, queryProvider.getPage(), queryProvider.getLimit());
 	}
 }

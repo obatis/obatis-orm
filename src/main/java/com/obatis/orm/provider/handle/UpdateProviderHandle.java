@@ -42,4 +42,5 @@ public class UpdateProviderHandle extends AbstractConditionProviderHandle implem
         this.addColumn(fieldName, SqlHandleEnum.HANDLE_REDUCE, value);
         return this;
     }
+
 }

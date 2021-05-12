@@ -39,7 +39,7 @@ public class BeanSessionMapperFactory {
 			return CacheInfoConstant.BEAN_SESSION_MAPPER.get(canonicalName);
 		}
 
-		return this;
+		return null;
 	}
 
 	private static synchronized void createSessionMapper(SqlSession sqlSession, String canonicalName) {

@@ -22,10 +22,12 @@ public class QueryProviderHandle extends AbstractQueryConditionProviderHandle im
 
     /**
      * 初始化查询代理句柄，主要为连接查询、union 等场景使用
-     * @param tableName
+     * @param joinTableName
      */
-    protected QueryProviderHandle(String tableName) {
-        this.setTableName(tableName);
+    protected QueryProviderHandle(String joinTableName) {
+        if(!ValidateTool.isEmpty(joinTableName)) {
+            this.setJoinTableName(joinTableName);
+        }
     }
 
     /**
@@ -44,6 +46,30 @@ public class QueryProviderHandle extends AbstractQueryConditionProviderHandle im
      * 连接查询 QueryProvider
      */
     private List<Object[]> unionProviderArray;
+    /**
+     * 代理类序列号
+     */
+    private String tableAsNameSerialNumber;
+
+    public Map<String, String> getRemoveColumnArray() {
+        return removeColumnArray;
+    }
+
+    public boolean isSelectNothingFlag() {
+        return selectNothingFlag;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public List<Object[]> getUnionProviderArray() {
+        return unionProviderArray;
+    }
+
+    public String getTableAsNameSerialNumber() {
+        return tableAsNameSerialNumber;
+    }
 
     /**
      * 添加字段方法，接收两个参数，此方法主要用于查询(select)
@@ -438,6 +464,31 @@ public class QueryProviderHandle extends AbstractQueryConditionProviderHandle im
         }
         Object[] unionProvider = {unionEnum, queryProvider};
         this.unionProviderArray.add(unionProvider);
+        return this;
+    }
+
+    /**
+     * 移除所有属性，方便对象复用，但是要确保对象已经被消费
+     * @return
+     */
+    @Override
+    public QueryProvider reset() {
+        super.reset();
+        if(removeColumnArray != null && !removeColumnArray.isEmpty()) {
+            removeColumnArray.clear();
+        }
+        if(selectNothingFlag) {
+            selectNothingFlag = false;
+        }
+        if(page != RequestConstant.DEFAULT_PAGE) {
+            page = RequestConstant.DEFAULT_PAGE;
+        }
+        if(unionProviderArray != null && !unionProviderArray.isEmpty()) {
+            unionProviderArray.clear();
+        }
+        if(!ValidateTool.isEmpty(tableAsNameSerialNumber)) {
+            tableAsNameSerialNumber = null;
+        }
         return this;
     }
 }

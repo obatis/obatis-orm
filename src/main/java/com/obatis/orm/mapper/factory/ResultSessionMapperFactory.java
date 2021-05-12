@@ -36,7 +36,7 @@ public class ResultSessionMapperFactory {
 			return CacheInfoConstant.RESULT_SESSION_MAPPER.get(canonicalName);
 		}
 
-		return this;
+		return null;
 	}
 
 	private static synchronized void createSessionMapper(SqlSession sqlSession, String canonicalName) {

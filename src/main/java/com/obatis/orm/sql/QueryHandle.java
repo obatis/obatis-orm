@@ -8,6 +8,9 @@ import com.obatis.orm.constant.type.FilterEnum;
 import com.obatis.orm.constant.type.SqlHandleEnum;
 import com.obatis.exception.HandleException;
 import com.obatis.orm.provider.UpdateProvider;
+import com.obatis.orm.provider.condition.ConditionProvider;
+import com.obatis.orm.provider.condition.handle.ConditionProviderHandle;
+import com.obatis.orm.provider.handle.QueryProviderHandle;
 import com.obatis.tools.ValidateTool;
 
 import java.lang.reflect.Field;
@@ -22,11 +25,11 @@ public class QueryHandle {
 	private QueryHandle() {
 	}
 
-	public static final void getFilters(Object object, QueryProvider queryProvider) {
-		getFilters(object, object.getClass(), queryProvider);
+	public static final void getFilters(Object object, ConditionProviderHandle conditionProvider) {
+		getFilters(object, object.getClass(), conditionProvider);
 	}
 	
-	private static final void getFilters(Object object, Class<?> cls, QueryProvider queryProvider) {
+	private static final void getFilters(Object object, Class<?> cls, ConditionProviderHandle conditionProvider) {
 		Field[] fields = cls.getDeclaredFields();
 		
 		for (Field field : fields) {
@@ -34,18 +37,18 @@ public class QueryHandle {
 			if (isStatic) {
 				continue;
 			}
-			if(!setFilter(object, queryProvider, field)) {
+			if(!setFilter(object, conditionProvider, field)) {
 				continue;
 			}
 		}
 		
 		Class<?> supCls = cls.getSuperclass();
 		if(supCls != null) {
-			getFilters(object, supCls, queryProvider);
+			getFilters(object, supCls, conditionProvider);
 		}
 	}
 
-	private static boolean setFilter(Object object, QueryProvider queryProvider, Field field) {
+	private static boolean setFilter(Object object, ConditionProviderHandle conditionProvider, Field field) {
 		QueryFilter queryFilter = field.getAnnotation(QueryFilter.class);
 		if (queryFilter == null) {
 			return false;
@@ -88,55 +91,55 @@ public class QueryHandle {
 		FilterEnum filterType = queryFilter.type();
 		switch (filterType) {
 			case LIKE:
-				queryProvider.like(fieldName, value);
+				conditionProvider.like(fieldName, value);
 				break;
 			case LEFT_LIKE:
-				queryProvider.leftLike(fieldName, value);
+				conditionProvider.leftLike(fieldName, value);
 				break;
 			case RIGHT_LIKE:
-				queryProvider.rightLike(fieldName, value);
+				conditionProvider.rightLike(fieldName, value);
 				break;
 			case EQUAL:
-				queryProvider.equals(fieldName, value);
+				conditionProvider.equal(fieldName, value);
 				break;
 			case GREATER_THAN:
-				queryProvider.greaterThan(fieldName, value);
+				conditionProvider.greaterThan(fieldName, value);
 				break;
 			case GREATER_EQUAL:
-				queryProvider.greaterEqual(fieldName, value);
+				conditionProvider.greaterEqual(fieldName, value);
 				break;
 			case LESS_THAN:
-				queryProvider.lessThan(fieldName, value);
+				conditionProvider.lessThan(fieldName, value);
 				break;
 			case LESS_EQUAL:
-				queryProvider.lessEqual(fieldName, value);
+				conditionProvider.lessEqual(fieldName, value);
 				break;
 			case NOT_EQUAL:
-				queryProvider.notEqual(fieldName, value);
+				conditionProvider.notEqual(fieldName, value);
 				break;
 			case IN:
-				queryProvider.in(fieldName, value);
+				conditionProvider.in(fieldName, value);
 				break;
 			case NOT_IN:
-				queryProvider.notIn(fieldName, value);
+				conditionProvider.notIn(fieldName, value);
 				break;
 			case IS_NULL:
-				queryProvider.isNull(fieldName);
+				conditionProvider.isNull(fieldName);
 				break;
 			case IS_NOT_NULL:
-				queryProvider.isNotNull(fieldName);
+				conditionProvider.isNotNull(fieldName);
 				break;
 			case UP_GREATER_THAN:
-				queryProvider.upGreaterThanZero(fieldName, value);
+				conditionProvider.upGreaterThanZero(fieldName, value);
 				break;
 			case UP_GREATER_EQUAL:
-				queryProvider.upGreaterEqualZero(fieldName, value);
+				conditionProvider.upGreaterEqualZero(fieldName, value);
 				break;
 			case REDUCE_GREATER_THAN:
-				queryProvider.reduceGreaterThanZero(fieldName, value);
+				conditionProvider.reduceGreaterThanZero(fieldName, value);
 				break;
 			case REDUCE_GREATER_EQUAL:
-				queryProvider.reduceGreaterEqualZero(fieldName, value);
+				conditionProvider.reduceGreaterEqualZero(fieldName, value);
 				break;
 			default:
 				throw new HandleException("error: filter annotation invalid");

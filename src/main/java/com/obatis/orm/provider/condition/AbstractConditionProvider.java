@@ -563,5 +563,4 @@ public interface AbstractConditionProvider extends ConditionProvider {
      * @param orderType
      */
     AbstractConditionProvider addExpOrder(String orderName, OrderEnum orderType);
-
 }

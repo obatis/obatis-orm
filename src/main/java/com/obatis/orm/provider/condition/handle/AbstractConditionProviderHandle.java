@@ -7,6 +7,7 @@ import com.obatis.orm.constant.type.OrderEnum;
 import com.obatis.orm.constant.type.SqlHandleEnum;
 import com.obatis.orm.provider.QueryProvider;
 import com.obatis.orm.provider.condition.AbstractConditionProvider;
+import com.obatis.orm.provider.condition.ConditionProvider;
 import com.obatis.orm.sql.mysql.HandleOrderMethod;
 import com.obatis.tools.ValidateTool;
 
@@ -15,6 +16,10 @@ import java.util.List;
 
 public class AbstractConditionProviderHandle extends ConditionProviderHandle implements AbstractConditionProvider {
 
+    /**
+     * 表名
+     */
+    private String joinTableName;
     /**
      * 字段列表
      */
@@ -36,10 +41,43 @@ public class AbstractConditionProviderHandle extends ConditionProviderHandle imp
      */
     private List<Object[]> orderArray;
 
+
     /**
      * 排序抽象类
+     * 定义抽象排序类，不属于开发者可操作范畴
      */
     protected static AbstractOrder abstractOrder;
+
+    public void setJoinTableName(String joinTableName) {
+        this.joinTableName = joinTableName;
+    }
+
+    public String getJoinTableName() {
+        return joinTableName;
+    }
+    /**
+     * 获取字段列表
+     * @return
+     */
+    public List<Object[]> getColumnArray() {
+        return this.columnArray;
+    }
+
+    public List<Object[]> getOnFilterArray() {
+        return onFilterArray;
+    }
+
+    public List<Object[]> getOnProviderArray() {
+        return onProviderArray;
+    }
+
+    public List<Object[]> getLeftJoinProviderArray() {
+        return leftJoinProviderArray;
+    }
+
+    public List<Object[]> getOrderArray() {
+        return orderArray;
+    }
 
     /**
      * 添加字段
@@ -69,14 +107,6 @@ public class AbstractConditionProviderHandle extends ConditionProviderHandle imp
             Object[] obj = { fieldName, fieldType, value, pattern};
             this.columnArray.add(obj);
         }
-    }
-
-    /**
-     * 获取字段列表
-     * @return
-     */
-    public List<Object[]> getColumnArray() {
-        return this.columnArray;
     }
 
     /**
@@ -691,6 +721,34 @@ public class AbstractConditionProviderHandle extends ConditionProviderHandle imp
     @Override
     public AbstractConditionProvider addExpOrder(String orderName, OrderEnum orderType) {
         this.setOrder(orderName, orderType, SqlHandleEnum.HANDLE_EXP);
+        return this;
+    }
+
+    /**
+     * 移除所有属性，方便对象复用，但是要确保对象已经被消费
+     * @return
+     */
+    @Override
+    public ConditionProvider reset() {
+        super.reset();
+        if(!ValidateTool.isEmpty(joinTableName)) {
+            joinTableName = null;
+        }
+        if(columnArray != null && !columnArray.isEmpty()) {
+            columnArray.clear();
+        }
+        if(onFilterArray != null && !onFilterArray.isEmpty()) {
+            onFilterArray.clear();
+        }
+        if(onProviderArray != null && !onProviderArray.isEmpty()) {
+            onProviderArray.clear();
+        }
+        if(leftJoinProviderArray != null && !leftJoinProviderArray.isEmpty()) {
+            leftJoinProviderArray.clear();
+        }
+        if(orderArray != null && !orderArray.isEmpty()) {
+            orderArray.clear();
+        }
         return this;
     }
 }

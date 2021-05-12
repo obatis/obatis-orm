@@ -16,11 +16,11 @@ public class ProviderBuilder {
 
     /**
      * 创建查询代理
-     * @param tableName
+     * @param joinTableName
      * @return
      */
-    public static QueryProvider query(String tableName) {
-        return new QueryProviderHandle(tableName);
+    public static QueryProvider query(String joinTableName) {
+        return new QueryProviderHandle(joinTableName);
     }
 
     /**

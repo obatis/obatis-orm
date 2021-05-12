@@ -62,7 +62,7 @@ public class HandleInsertBatchMethod extends AbstractInsertMethod {
 			res.put(SqlConstant.BEAN_VALUE, String.join(",", valueArr));
 			return res;
 		} else {
-			return this;
+			return null;
 		}
 	}
 

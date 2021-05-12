@@ -3,6 +3,7 @@ package com.obatis.orm.provider;
 import com.obatis.exception.HandleException;
 import com.obatis.orm.constant.type.UnionEnum;
 import com.obatis.orm.provider.condition.AbstractQueryConditionProvider;
+import com.obatis.orm.provider.condition.ConditionProvider;
 
 /**
  * 查询代理句柄接口

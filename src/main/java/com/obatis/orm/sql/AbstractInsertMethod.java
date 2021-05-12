@@ -46,7 +46,7 @@ public abstract class AbstractInsertMethod {
 			res.put(SqlConstant.BEAN_VALUE, String.join(",", values));
 			return res;
 		} else {
-			return this;
+			return null;
 		}
 	}
 	
@@ -77,15 +77,6 @@ public abstract class AbstractInsertMethod {
 				boolean addFlag = false;
 				if (ValidateTool.isEmpty(value)) {
 					if (CommonField.FIELD_ID.equals(columnName)) {
-//						Class<?> fieldType = field.getType();
-//						Object fieldValue = null;
-//						if(fieldType == BigInteger.class) {
-//							fieldValue = NumberGenerator.getNumber();
-//						} else {
-//							// 其他类型默认放置当前时间戳
-//							fieldValue = DateConvert.getTimeMillis();
-//						}
-
 						field.set(obj, NumberGenerator.getNumber());
 						addFlag = true;
 					} else if (CommonField.FIELD_CREATE_TIME.equals(columnName)) {

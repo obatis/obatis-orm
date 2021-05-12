@@ -527,7 +527,7 @@ public interface ConditionProvider {
     ConditionProvider setFilters(Object obj);
 
     /**
-     * 移除所有条件，方便对象复用，但是要确保对象已经被消费
+     * 移除所有属性，方便对象复用，但是要确保对象已经被消费
      * @param
      */
     ConditionProvider reset();
