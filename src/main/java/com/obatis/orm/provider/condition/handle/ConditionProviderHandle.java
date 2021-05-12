@@ -598,8 +598,8 @@ public class ConditionProviderHandle implements ConditionProvider {
     }
 
     @Override
-    public ConditionProvider setLimit(int rows) {
-        this.limit = rows;
+    public ConditionProvider setLimit(int limit) {
+        this.limit = limit;
         return this;
     }
 

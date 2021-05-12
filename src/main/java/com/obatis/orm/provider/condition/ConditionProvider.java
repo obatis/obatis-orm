@@ -514,9 +514,9 @@ public interface ConditionProvider {
      * 用于设置获取条数
      * 如果是分页查询，不设置时自动设置默认值
      * 如果不是分页查询，不设置表示查询所有数据
-     * @param rows
+     * @param limit
      */
-    ConditionProvider setLimit(int rows);
+    ConditionProvider setLimit(int limit);
 
     /**
      * 根据前端传入的 command 实体，获取查询属性的 @QueryFilter 注解值
