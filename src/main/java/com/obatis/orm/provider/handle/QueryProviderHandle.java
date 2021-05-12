@@ -22,14 +22,18 @@ public class QueryProviderHandle extends AbstractQueryConditionProviderHandle im
 
     /**
      * 初始化查询代理句柄，主要为连接查询、union 等场景使用
-     * @param joinTableName
+     * @param tableName
      */
-    protected QueryProviderHandle(String joinTableName) {
-        if(!ValidateTool.isEmpty(joinTableName)) {
-            this.setJoinTableName(joinTableName);
+    protected QueryProviderHandle(String tableName) {
+        if(!ValidateTool.isEmpty(tableName)) {
+            this.tableName = tableName;
         }
     }
 
+    /**
+     * 表名
+     */
+    private String tableName;
     /**
      * 过滤(排除)不需要查询的字段列表
      */
@@ -46,10 +50,10 @@ public class QueryProviderHandle extends AbstractQueryConditionProviderHandle im
      * 连接查询 QueryProvider
      */
     private List<Object[]> unionProviderArray;
-    /**
-     * 代理类序列号
-     */
-    private String tableAsNameSerialNumber;
+
+    public String getTableName() {
+        return tableName;
+    }
 
     public Map<String, String> getRemoveColumnArray() {
         return removeColumnArray;
@@ -65,10 +69,6 @@ public class QueryProviderHandle extends AbstractQueryConditionProviderHandle im
 
     public List<Object[]> getUnionProviderArray() {
         return unionProviderArray;
-    }
-
-    public String getTableAsNameSerialNumber() {
-        return tableAsNameSerialNumber;
     }
 
     /**
@@ -485,9 +485,6 @@ public class QueryProviderHandle extends AbstractQueryConditionProviderHandle im
         }
         if(unionProviderArray != null && !unionProviderArray.isEmpty()) {
             unionProviderArray.clear();
-        }
-        if(!ValidateTool.isEmpty(tableAsNameSerialNumber)) {
-            tableAsNameSerialNumber = null;
         }
         return this;
     }

@@ -15,12 +15,12 @@ public class ProviderBuilder {
     }
 
     /**
-     * 创建查询代理
-     * @param joinTableName
+     * 创建查询代理，主要用于连接查询
+     * @param tableName
      * @return
      */
-    public static QueryProvider query(String joinTableName) {
-        return new QueryProviderHandle(joinTableName);
+    public static QueryProvider query(String tableName) {
+        return new QueryProviderHandle(tableName);
     }
 
     /**

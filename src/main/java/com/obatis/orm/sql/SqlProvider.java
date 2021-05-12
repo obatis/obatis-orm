@@ -44,14 +44,6 @@ public class SqlProvider<T> {
 		return SqlHandleProvider.getSelectSql(providers, tableName);
 	}
 
-//	public String findLimit(@Param("request") Map<String, Object> providers, int limit, String tableName) throws HandleException {
-//		return SqlHandleProvider.getSelectSql(providers, limit, tableName);
-//	}
-
-//	public String findOne(@Param("request") Map<String, Object> providers, String tableName) throws HandleException {
-//		return SqlHandleProvider.getSelectSql(providers, tableName);
-//	}
-
 	public String list(@Param("request") Map<String, Object> providers, String tableName) throws HandleException {
 		return SqlHandleProvider.getSelectSql(providers, tableName);
 	}

@@ -164,7 +164,6 @@ public class QueryHandle {
 			/**
 			 * 进行条件的连带处理
 			 */
-//			setFilter(object, updateProvider, field);
 			UpdateField updateField = field.getAnnotation(UpdateField.class);
 			if (updateField == null) {
 				continue;

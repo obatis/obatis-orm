@@ -1,6 +1,7 @@
 package com.obatis.orm.provider.condition.handle;
 
 import com.obatis.exception.HandleException;
+import com.obatis.orm.constant.CacheInfoConstant;
 import com.obatis.orm.constant.type.FilterEnum;
 import com.obatis.orm.constant.type.AppendTypeEnum;
 import com.obatis.orm.constant.type.OrderEnum;
@@ -16,10 +17,6 @@ import java.util.List;
 
 public class AbstractConditionProviderHandle extends ConditionProviderHandle implements AbstractConditionProvider {
 
-    /**
-     * 表名
-     */
-    private String joinTableName;
     /**
      * 字段列表
      */
@@ -40,21 +37,21 @@ public class AbstractConditionProviderHandle extends ConditionProviderHandle imp
      * 排序列表
      */
     private List<Object[]> orderArray;
-
+    /**
+     * 代理类序列号
+     */
+    private String tableAsNameSerialNumber;
 
     /**
      * 排序抽象类
      * 定义抽象排序类，不属于开发者可操作范畴
      */
     protected static AbstractOrder abstractOrder;
+    /**
+     * 传入的更新实体
+     */
+    public Object updateObj;
 
-    public void setJoinTableName(String joinTableName) {
-        this.joinTableName = joinTableName;
-    }
-
-    public String getJoinTableName() {
-        return joinTableName;
-    }
     /**
      * 获取字段列表
      * @return
@@ -77,6 +74,19 @@ public class AbstractConditionProviderHandle extends ConditionProviderHandle imp
 
     public List<Object[]> getOrderArray() {
         return orderArray;
+    }
+
+    public String getTableAsNameSerialNumber() {
+        return tableAsNameSerialNumber;
+    }
+
+    /**
+     * 用户获取此 QueryProvider 所对应的字段，调用该方法，主要用于多表查询的时候使用
+     * @param fieldName
+     * @return
+     */
+    public String getColumn(String fieldName) {
+        return CacheInfoConstant.TABLE_AS_START_PREFIX + getTableAsNameSerialNumber() + "." + fieldName;
     }
 
     /**
@@ -731,9 +741,6 @@ public class AbstractConditionProviderHandle extends ConditionProviderHandle imp
     @Override
     public ConditionProvider reset() {
         super.reset();
-        if(!ValidateTool.isEmpty(joinTableName)) {
-            joinTableName = null;
-        }
         if(columnArray != null && !columnArray.isEmpty()) {
             columnArray.clear();
         }
@@ -748,6 +755,12 @@ public class AbstractConditionProviderHandle extends ConditionProviderHandle imp
         }
         if(orderArray != null && !orderArray.isEmpty()) {
             orderArray.clear();
+        }
+        if(!ValidateTool.isEmpty(tableAsNameSerialNumber)) {
+            tableAsNameSerialNumber = null;
+        }
+        if(updateObj != null) {
+            updateObj = null;
         }
         return this;
     }

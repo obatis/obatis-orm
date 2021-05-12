@@ -23,10 +23,13 @@ public class ConditionProviderHandle implements ConditionProvider {
      */
     private List<Object[]> providerArray;
     /**
-     * 行数
+     * 影响行数，默认为0，默认值时 SQL 不体现 limit 关键字
      */
     private int limit;
-    private Object updateObj;
+    /**
+     * 传入的更新实体
+     */
+    public Object updateObj;
 
     public List<Object[]> getProviderArray() {
         return providerArray;

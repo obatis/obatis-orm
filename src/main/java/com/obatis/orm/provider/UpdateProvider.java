@@ -26,4 +26,11 @@ public interface UpdateProvider extends AbstractConditionProvider {
      * @param value
      */
     UpdateProvider reduce(String fieldName, Object value);
+
+    /**
+     * 根据前端传入的参数实体类，获取修改属性的 @UpdateField 注解值
+     * obj 必须为 RequestParam 的子类，否则抛出 HandleException 异常
+     * @param obj
+     */
+    UpdateProvider setUpdate(Object obj);
 }

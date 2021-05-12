@@ -148,7 +148,7 @@ public class SqlHandleFactory<T> implements SqlHandle<T> {
 	public int update(UpdateProvider provider) throws HandleException {
 		
 		if(provider == null) {
-			throw new HandleException("error: update QueryProvider is null");
+			throw new HandleException("error: update UpdateProvider is null");
 		}
 		
 		Map<String, Object> paramMap = new HashMap<>();
@@ -166,7 +166,7 @@ public class SqlHandleFactory<T> implements SqlHandle<T> {
 	public int batchUpdate(List<UpdateProvider> list) throws HandleException {
 		
 		if(list == null || list.isEmpty()) {
-			throw new HandleException("error: batchUpdate QueryProvider is empty");
+			throw new HandleException("error: batchUpdate UpdateProvider is empty");
 		}
 		
 		Map<String, Object> paramMap = new HashMap<>();

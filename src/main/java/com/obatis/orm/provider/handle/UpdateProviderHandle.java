@@ -1,9 +1,11 @@
 package com.obatis.orm.provider.handle;
 
+import com.obatis.config.request.RequestParam;
 import com.obatis.exception.HandleException;
 import com.obatis.orm.constant.type.SqlHandleEnum;
 import com.obatis.orm.provider.UpdateProvider;
 import com.obatis.orm.provider.condition.handle.AbstractConditionProviderHandle;
+import com.obatis.orm.sql.QueryHandle;
 
 public class UpdateProviderHandle extends AbstractConditionProviderHandle implements UpdateProvider {
 
@@ -43,4 +45,19 @@ public class UpdateProviderHandle extends AbstractConditionProviderHandle implem
         return this;
     }
 
+    /**
+     * 根据前端传入的参数实体类，获取修改属性的 @UpdateField 注解值
+     * obj 必须为 RequestParam 的子类，否则抛出 HandleException 异常
+     * @param obj
+     */
+    @Override
+    public UpdateProvider setUpdate(Object obj) {
+        if (!(obj instanceof RequestParam)) {
+            throw new HandleException("error: the update is not instanceof RequestParam");
+        }
+        updateObj = obj;
+        QueryHandle.getUpdateField(obj, this);
+        QueryHandle.getFilters(obj, this);
+        return this;
+    }
 }
