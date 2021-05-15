@@ -19,13 +19,13 @@ public class BeanSessionMapperFactory {
 	 * @return
 	 * @throws HandleException
 	 */
-	public static BaseBeanSessionMapper<?> getSessionMapper(SqlSession sqlSession, String canonicalName) throws HandleException {
+	public static BaseBeanSessionMapper getSessionMapper(SqlSession sqlSession, String canonicalName) throws HandleException {
 
 		if(getSessionMapper(canonicalName) == null) {
 			createSessionMapper(sqlSession, canonicalName);
 		}
 
-		BaseBeanSessionMapper<?> sessionMapper = getSessionMapper(canonicalName);
+		BaseBeanSessionMapper sessionMapper = getSessionMapper(canonicalName);
 		if(sessionMapper == null) {
 			throw new HandleException("error: sessionMapper is null");
 		}
@@ -33,7 +33,7 @@ public class BeanSessionMapperFactory {
 		return sessionMapper;
 	}
 
-	private static BaseBeanSessionMapper<?> getSessionMapper(String canonicalName) throws HandleException {
+	private static BaseBeanSessionMapper getSessionMapper(String canonicalName) throws HandleException {
 
 		if(CacheInfoConstant.BEAN_SESSION_MAPPER.containsKey(canonicalName)) {
 			return CacheInfoConstant.BEAN_SESSION_MAPPER.get(canonicalName);
@@ -85,7 +85,7 @@ public class BeanSessionMapperFactory {
 		}
 
 		sqlSession.getConfiguration().addMapper(mapperCls);
-		BaseBeanSessionMapper<?> mapper = (BaseBeanSessionMapper<?>) sqlSession.getConfiguration().getMapper(mapperCls, sqlSession);
+		BaseBeanSessionMapper mapper = (BaseBeanSessionMapper) sqlSession.getConfiguration().getMapper(mapperCls, sqlSession);
 		if(mapper == null) {
 			throw new HandleException("error: compilerMapper is fail");
 		}

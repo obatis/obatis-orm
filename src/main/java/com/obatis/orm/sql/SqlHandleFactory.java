@@ -2,6 +2,7 @@ package com.obatis.orm.sql;
 
 import com.obatis.config.response.result.PageInfo;
 import com.obatis.config.response.result.ResultInfo;
+import com.obatis.exception.HandleException;
 import com.obatis.orm.SqlHandle;
 import com.obatis.orm.constant.CacheInfoConstant;
 import com.obatis.orm.constant.SqlConstant;
@@ -10,15 +11,13 @@ import com.obatis.orm.mapper.BaseResultSessionMapper;
 import com.obatis.orm.mapper.factory.BeanSessionMapperFactory;
 import com.obatis.orm.mapper.factory.ResultSessionMapperFactory;
 import com.obatis.orm.model.CommonField;
-import com.obatis.exception.HandleException;
 import com.obatis.orm.model.CommonModel;
-import com.obatis.orm.provider.QueryProvider;
 import com.obatis.orm.provider.DeleteProvider;
+import com.obatis.orm.provider.QueryProvider;
 import com.obatis.orm.provider.UpdateProvider;
 import com.obatis.orm.provider.handle.ProviderBuilder;
 import com.obatis.tools.ValidateTool;
 import org.apache.ibatis.session.SqlSession;
-import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
 import java.lang.reflect.ParameterizedType;
@@ -38,8 +37,7 @@ import java.util.Map;
  * @author HuangLongPu
  * @param
  */
-@Configuration
-public class SqlHandleFactory<T> implements SqlHandle<T> {
+public class SqlHandleFactory<T extends CommonModel> implements SqlHandle<T> {
 
 	private Class<T> entityCls;
 	private String tableName;
@@ -62,6 +60,7 @@ public class SqlHandleFactory<T> implements SqlHandle<T> {
 		if (baseBeanSessionMapper != null) {
 			return baseBeanSessionMapper;
 		}
+
 		baseBeanSessionMapper = (BaseBeanSessionMapper<T>) BeanSessionMapperFactory.getSessionMapper(sqlSession, canonicalName);
 		return baseBeanSessionMapper;
 	}
@@ -123,6 +122,7 @@ public class SqlHandleFactory<T> implements SqlHandle<T> {
 	 */
 	@Override
 	public int insert(T t) throws HandleException {
+
 		if (!(t instanceof CommonModel)) {
 			throw new HandleException("error: entity is not instanceof CommonModel");
 		}

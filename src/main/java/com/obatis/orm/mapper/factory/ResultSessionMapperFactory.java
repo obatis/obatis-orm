@@ -16,13 +16,13 @@ public class ResultSessionMapperFactory {
 	 * @param canonicalName
 	 * @return
 	 */
-	public static BaseResultSessionMapper<?> getSessionMapper(SqlSession sqlSession, String canonicalName) {
+	public static BaseResultSessionMapper getSessionMapper(SqlSession sqlSession, String canonicalName) {
 
 		if(getSessionMapper(canonicalName) == null) {
 			createSessionMapper(sqlSession, canonicalName);
 		}
 
-		BaseResultSessionMapper<?> sessionMapper = getSessionMapper(canonicalName);
+		BaseResultSessionMapper sessionMapper = getSessionMapper(canonicalName);
 		if(sessionMapper == null) {
 			throw new HandleException("error: result sessionMapper is null");
 		}
@@ -30,7 +30,7 @@ public class ResultSessionMapperFactory {
 		return sessionMapper;
 	}
 
-	private static BaseResultSessionMapper<?> getSessionMapper(String canonicalName) throws HandleException {
+	private static BaseResultSessionMapper getSessionMapper(String canonicalName) throws HandleException {
 
 		if(CacheInfoConstant.RESULT_SESSION_MAPPER.containsKey(canonicalName)) {
 			return CacheInfoConstant.RESULT_SESSION_MAPPER.get(canonicalName);
@@ -73,7 +73,7 @@ public class ResultSessionMapperFactory {
 		}
 
 		sqlSession.getConfiguration().addMapper(mapperCls);
-		BaseResultSessionMapper<?> resultMapper = (BaseResultSessionMapper<?>) sqlSession.getConfiguration().getMapper(mapperCls, sqlSession);
+		BaseResultSessionMapper resultMapper = (BaseResultSessionMapper) sqlSession.getConfiguration().getMapper(mapperCls, sqlSession);
 		if(resultMapper == null) {
 			throw new HandleException("error: compilerMapper is fail");
 		}
