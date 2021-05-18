@@ -3,6 +3,7 @@ package com.obatis.orm;
 import com.obatis.config.response.result.PageInfo;
 import com.obatis.config.response.result.ResultInfo;
 import com.obatis.exception.HandleException;
+import com.obatis.orm.model.CommonModel;
 import com.obatis.orm.provider.DeleteProvider;
 import com.obatis.orm.provider.QueryProvider;
 import com.obatis.orm.provider.UpdateProvider;
@@ -16,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public interface SqlHandle<T> {
+public interface SqlHandle<T extends CommonModel> {
 
     /**
      * 单个添加，传入一个 CommonEntity对象，并返回影响行数
